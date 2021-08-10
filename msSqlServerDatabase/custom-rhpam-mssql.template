@@ -1,0 +1,42 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: custom-rhpam-mssql
+spec:
+  environment: rhpam-production
+  imageRegistry:
+    registry: quay.io
+  commonConfig:
+    adminPassword: password
+    adminUser: admin
+    amqClusterPassword: password
+    amqPassword: password
+    dbPassword: password
+    keyStorePassword: password
+    applicationName: custom-rhpam-mssql
+  objects:
+    console:
+      replicas: 1
+    servers:
+      - database:
+          type: external
+          externalConfig:
+            extensionImage: false
+            driver: mssql
+            dialect: org.hibernate.dialect.SQLServer2012Dialect
+            jdbcURL: jdbc:sqlserver://MSSQL_URL;DatabaseName=rhpam
+            nonXA: 'true'
+            username: sa
+            password: msSql2019
+            minPoolSize: '10'
+            maxPoolSize: '10'
+            connectionChecker: >-
+              org.jboss.jca.adapters.jdbc.extensions.mssql.MSSQLValidConnectionChecker
+            exceptionSorter: org.jboss.jca.adapters.jdbc.extensions.mssql.MSSQLExceptionSorter
+            backgroundValidation: "true"
+        image: rhpam-kieserver-rhel8-custom-mssql
+        imageContext: ecosystem-appeng
+        imageTag: 7.9.0
+        id: kieserver-custom-mssql-1
+        name: kieserver-custom-mssql
+        replicas: 1
